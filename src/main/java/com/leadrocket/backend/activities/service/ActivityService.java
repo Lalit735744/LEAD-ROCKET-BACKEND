@@ -8,14 +8,17 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.leadrocket.backend.activities.filter.ActivityFilterService;
 
 @Service
 public class ActivityService {
 
 	private final ActivityRepository repository;
+	private final ActivityFilterService filterService;
 
-	public ActivityService(ActivityRepository repository) {
+	public ActivityService(ActivityRepository repository, ActivityFilterService filterService) {
 		this.repository = repository;
+		this.filterService = filterService;
 	}
 
 	public ActivityDTO create(ActivityDTO dto) {
@@ -46,7 +49,21 @@ public class ActivityService {
 				.collect(Collectors.toList());
 	}
 
-	private ActivityDTO toDTO(Activity activity) {
+	public List<ActivityDTO> getNotDone(String userId) {
+		return filterService.notDoneActivities(userId)
+				.stream()
+				.map(this::toDTO)
+				.collect(Collectors.toList());
+	}
+
+	public List<ActivityDTO> getOverdue(String userId) {
+		return filterService.overdueActivities(userId)
+				.stream()
+				.map(this::toDTO)
+				.collect(Collectors.toList());
+	}
+
+	public ActivityDTO toDTO(Activity activity) {
 		ActivityDTO dto = new ActivityDTO();
 		dto.setId(activity.getId());
 		dto.setLeadId(activity.getLeadId());

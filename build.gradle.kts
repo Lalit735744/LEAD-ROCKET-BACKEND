@@ -29,11 +29,19 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("com.mysql:mysql-connector-j")
 
+    /* H2 for tests */
+    testImplementation("com.h2database:h2:2.2.220")
+
     /* ================= JSON ================= */
     implementation("com.fasterxml.jackson.core:jackson-databind")
 
     /* ================= UTILITIES ================= */
     implementation("org.apache.commons:commons-lang3:3.14.0")
+
+    /* ================= JWT ================= */
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
     /* ================= TESTING ================= */
     testImplementation("org.springframework.boot:spring-boot-starter-test")

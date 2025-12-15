@@ -2,28 +2,22 @@ spring:
   application:
     name: lead-rocket-backend
 
-  profiles:
-    active: dev
-
   data:
     mongodb:
-      host: <ENTER_MONGODB_HOST>
-      port: <ENTER_MONGODB_PORT>
-      database: <ENTER_MONGODB_DB>
+      host: localhost
+      port: 27017
+      database: leadrocket_dev
 
   datasource:
-    url: jdbc:mysql://<ENTER_MYSQL_HOST>:<ENTER_MYSQL_PORT>/<ENTER_DB_NAME>
-    username: <ENTER_MYSQL_USERNAME>
-    password: <ENTER_MYSQL_PASSWORD>
+    url: jdbc:mysql://localhost:3306/leadrocket_dev
+    username: root
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: none
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: false
+      ddl-auto: update
+    show-sql: true
 
 server:
   port: 8080

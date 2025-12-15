@@ -1,5 +1,6 @@
 package com.leadrocket.backend.leads.controller;
 
+import com.leadrocket.backend.leads.assignment.LeadAssignmentService;
 import com.leadrocket.backend.leads.dto.LeadServiceDTO;
 import com.leadrocket.backend.leads.service.LeadService;
 import org.springframework.web.bind.annotation.*;
@@ -7,21 +8,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/leads")
+@RequestMapping("/leads")
 public class LeadController {
 
 	private final LeadService service;
+	private final LeadAssignmentService assignmentService;
 
-	public LeadController(LeadService service) {
+	public LeadController(LeadService service, LeadAssignmentService assignmentService) {
 		this.service = service;
+		this.assignmentService = assignmentService;
 	}
 
-	@PostMapping
+	@PostMapping("/create")
 	public LeadServiceDTO create(@RequestBody LeadServiceDTO dto) {
 		return service.create(dto);
 	}
 
-	@GetMapping
+	@GetMapping("/users")
 	public List<LeadServiceDTO> getAll() {
 		return service.getAll();
 	}
@@ -35,5 +38,15 @@ public class LeadController {
 	public LeadServiceDTO updateStatus(@PathVariable String leadId,
 	                                   @PathVariable String status) {
 		return service.updateStatus(leadId, status);
+	}
+
+	@PutMapping("/{leadId}/assign/{userId}")
+	public LeadServiceDTO assign(@PathVariable String leadId, @PathVariable String userId){
+		return service.toDTO(assignmentService.assign(leadId, userId));
+	}
+
+	@DeleteMapping("/{leadId}")
+	public void softDelete(@PathVariable String leadId){
+		service.softDelete(leadId);
 	}
 }

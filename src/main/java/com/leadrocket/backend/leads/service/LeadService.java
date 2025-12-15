@@ -32,6 +32,13 @@ public class LeadService {
 
 		return toDTO(repository.save(lead));
 	}
+	public void softDelete(String leadId) {
+		Lead lead = repository.findById(leadId).orElseThrow();
+		lead.setDeleted(true);
+		lead.setUpdatedAt(new Date());
+		repository.save(lead);
+	}
+
 
 	public List<LeadServiceDTO> getAll() {
 		return repository.findAll()
@@ -54,7 +61,7 @@ public class LeadService {
 		return toDTO(repository.save(lead));
 	}
 
-	private LeadServiceDTO toDTO(Lead lead) {
+	public LeadServiceDTO toDTO(Lead lead) {
 		LeadServiceDTO dto = new LeadServiceDTO();
 		dto.setId(lead.getId());
 		dto.setName(lead.getName());

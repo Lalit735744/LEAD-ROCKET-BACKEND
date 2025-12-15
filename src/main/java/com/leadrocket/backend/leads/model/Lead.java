@@ -21,6 +21,7 @@ public class Lead {
 	private Date createdAt;
 	private Date updatedAt;
 	private Map<String, Object> metadata;
+	private Boolean deleted = false;
 
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
@@ -51,4 +52,7 @@ public class Lead {
 
 	public Map<String, Object> getMetadata() { return metadata; }
 	public void setMetadata(Map<String, Object> metadata) { this.metadata = metadata; }
+
+	public Boolean getDeleted() { return deleted; }
+	public void setDeleted(Boolean deleted) { this.deleted = deleted; }
 }

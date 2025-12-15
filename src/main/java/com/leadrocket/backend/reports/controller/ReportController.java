@@ -18,4 +18,10 @@ public class ReportController {
 	public ReportResponseDTO dashboard() {
 		return service.getDashboardReport();
 	}
+
+	@GetMapping("/leads/status")
+	public Object leadsByStatus() {
+		return service.leadStatusReport();
+	}
+
 }

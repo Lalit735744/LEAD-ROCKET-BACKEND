@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/activities")
+@RequestMapping("/activities")
 public class ActivityController {
 
 	private final ActivityService service;
@@ -30,4 +30,14 @@ public class ActivityController {
 	public List<ActivityDTO> getByUser(@PathVariable String userId) {
 		return service.getByUser(userId);
 	}
+	@GetMapping("/not_done/{userId}")
+	public List<ActivityDTO> notDone(@PathVariable String userId) {
+		return service.getNotDone(userId);
+	}
+
+	@GetMapping("/overdue/{userId}")
+	public List<ActivityDTO> overdue(@PathVariable String userId) {
+		return service.getOverdue(userId);
+	}
+
 }
