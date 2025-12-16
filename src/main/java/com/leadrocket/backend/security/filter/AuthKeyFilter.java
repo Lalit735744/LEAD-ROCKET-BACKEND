@@ -1,6 +1,7 @@
 package com.leadrocket.backend.security.filter;
 
-import com.leadrocket.backend.security.authkey.AuthKeyValidator;
+import com.leadrocket.backend.common.exception.UnauthorizedException;
+import com.leadrocket.backend.security.authkey.AuthKeyService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,12 @@ import java.io.IOException;
 
 public class AuthKeyFilter extends OncePerRequestFilter {
 
+	private final AuthKeyService authKeyService;
+
+	public AuthKeyFilter(AuthKeyService authKeyService) {
+		this.authKeyService = authKeyService;
+	}
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
 	                                HttpServletResponse response,
@@ -18,7 +25,9 @@ public class AuthKeyFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 
 		String authKey = request.getHeader("AuthKey");
-		AuthKeyValidator.validate(authKey);
+		if (!authKeyService.isValid(authKey)) {
+			throw new UnauthorizedException("Invalid Auth Key");
+		}
 		filterChain.doFilter(request, response);
 	}
 }

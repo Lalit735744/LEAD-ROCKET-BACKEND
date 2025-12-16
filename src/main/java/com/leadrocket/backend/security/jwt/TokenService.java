@@ -11,7 +11,11 @@ public class TokenService {
 		this.provider = provider;
 	}
 
-	public String generateToken(String userId) {
-		return provider.generate(userId);
+	public String generateAccessToken(String userId) {
+		return provider.generateAccessToken(userId);
+	}
+
+	public String generateRefreshToken(String userId) {
+		return provider.generateRefreshToken(userId);
 	}
 }

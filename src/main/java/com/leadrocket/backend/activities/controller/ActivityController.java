@@ -40,4 +40,38 @@ public class ActivityController {
 		return service.getOverdue(userId);
 	}
 
+	// metadata filter
+	@GetMapping("/metadata")
+	public List<ActivityDTO> byMetadata(@RequestParam String key, @RequestParam String value) {
+		return service.getByMetadata(key, value);
+	}
+
+	// New endpoints
+	@GetMapping("/{id}")
+	public ActivityDTO getById(@PathVariable String id) {
+		return service.getById(id);
+	}
+
+	@PutMapping("/{id}")
+	public ActivityDTO update(@PathVariable String id, @RequestBody ActivityDTO dto) {
+		dto.setId(id);
+		return service.update(dto);
+	}
+
+	@PatchMapping("/{id}")
+	public ActivityDTO patch(@PathVariable String id, @RequestBody ActivityDTO dto) {
+		dto.setId(id);
+		return service.patch(dto);
+	}
+
+	@DeleteMapping("/{id}")
+	public void delete(@PathVariable String id) {
+		service.delete(id);
+	}
+
+	@PostMapping("/{id}/remarks")
+	public ActivityDTO addRemark(@PathVariable String id, @RequestBody String remark) {
+		return service.appendRemark(id, remark);
+	}
+
 }

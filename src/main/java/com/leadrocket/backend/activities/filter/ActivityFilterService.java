@@ -5,7 +5,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.leadrocket.backend.activities.service.ActivityService;
 import com.leadrocket.backend.activities.dto.ActivityDTO;
 
@@ -66,6 +65,13 @@ public class ActivityFilterService {
 				.stream()
 				.map(activityService::toDTO)
 				.toList();
+	}
+
+	// Filter by metadata key/value, checks nested metadata.<key>
+	public List<Activity> filterByMetadata(String key, Object value) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("metadata." + key).is(value));
+		return mongoTemplate.find(query, Activity.class);
 	}
 
 }

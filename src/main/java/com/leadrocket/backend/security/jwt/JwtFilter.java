@@ -7,12 +7,26 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 public class JwtFilter extends OncePerRequestFilter {
 
+	private final JwtProvider jwtProvider;
+
+	public JwtFilter(JwtProvider jwtProvider) {
+		this.jwtProvider = jwtProvider;
+	}
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
 			throws java.io.IOException, jakarta.servlet.ServletException {
 
-		String token = req.getHeader("Authorization");
-		if (token == null || !token.startsWith("Bearer ")) {
+		String authHeader = req.getHeader("Authorization");
+		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+			res.setStatus(401);
+			return;
+		}
+		String token = authHeader.substring(7);
+		try {
+			String userId = jwtProvider.getSubject(token);
+			req.setAttribute("authenticatedUserId", userId);
+		} catch (Exception ex) {
 			res.setStatus(401);
 			return;
 		}

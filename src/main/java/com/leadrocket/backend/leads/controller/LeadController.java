@@ -34,6 +34,11 @@ public class LeadController {
 		return service.getByUser(userId);
 	}
 
+	@GetMapping("/{leadId}")
+	public LeadServiceDTO getById(@PathVariable String leadId) {
+		return service.getById(leadId);
+	}
+
 	@PatchMapping("/{leadId}/status/{status}")
 	public LeadServiceDTO updateStatus(@PathVariable String leadId,
 	                                   @PathVariable String status) {
@@ -43,6 +48,17 @@ public class LeadController {
 	@PutMapping("/{leadId}/assign/{userId}")
 	public LeadServiceDTO assign(@PathVariable String leadId, @PathVariable String userId){
 		return service.toDTO(assignmentService.assign(leadId, userId));
+	}
+
+	@PutMapping("/{leadId}/unassign")
+	public LeadServiceDTO unassign(@PathVariable String leadId){
+		return service.toDTO(assignmentService.unassign(leadId));
+	}
+
+	@PutMapping("/{leadId}")
+	public LeadServiceDTO update(@PathVariable String leadId, @RequestBody LeadServiceDTO dto){
+		dto.setId(leadId);
+		return service.update(dto);
 	}
 
 	@DeleteMapping("/{leadId}")

@@ -4,10 +4,13 @@ import com.leadrocket.backend.leads.dto.LeadServiceDTO;
 import com.leadrocket.backend.leads.model.Lead;
 import com.leadrocket.backend.leads.repository.LeadRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.leadrocket.backend.common.exception.NotFoundException;
 
 @Service
 public class LeadService {
@@ -32,8 +35,9 @@ public class LeadService {
 
 		return toDTO(repository.save(lead));
 	}
+	@CacheEvict(value = "leads", key = "#leadId")
 	public void softDelete(String leadId) {
-		Lead lead = repository.findById(leadId).orElseThrow();
+		Lead lead = repository.findById(leadId).orElseThrow(() -> new NotFoundException("Lead not found: " + leadId));
 		lead.setDeleted(true);
 		lead.setUpdatedAt(new Date());
 		repository.save(lead);
@@ -43,6 +47,7 @@ public class LeadService {
 	public List<LeadServiceDTO> getAll() {
 		return repository.findAll()
 				.stream()
+				.filter(l -> l.getDeleted() == null || !l.getDeleted())
 				.map(this::toDTO)
 				.collect(Collectors.toList());
 	}
@@ -54,9 +59,30 @@ public class LeadService {
 				.collect(Collectors.toList());
 	}
 
+	@CacheEvict(value = "leads", key = "#leadId")
 	public LeadServiceDTO updateStatus(String leadId, String status) {
-		Lead lead = repository.findById(leadId).orElseThrow();
+		Lead lead = repository.findById(leadId).orElseThrow(() -> new NotFoundException("Lead not found: " + leadId));
 		lead.setStatus(status);
+		lead.setUpdatedAt(new Date());
+		return toDTO(repository.save(lead));
+	}
+
+	@Cacheable(value = "leads", key = "#id")
+	public LeadServiceDTO getById(String id) {
+		Lead lead = repository.findById(id).orElseThrow(() -> new NotFoundException("Lead not found: " + id));
+		return toDTO(lead);
+	}
+
+	@CacheEvict(value = "leads", key = "#dto.id")
+	public LeadServiceDTO update(LeadServiceDTO dto) {
+		Lead lead = repository.findById(dto.getId()).orElseThrow(() -> new NotFoundException("Lead not found: " + dto.getId()));
+		if (dto.getName() != null) lead.setName(dto.getName());
+		if (dto.getPhone() != null) lead.setPhone(dto.getPhone());
+		if (dto.getEmail() != null) lead.setEmail(dto.getEmail());
+		if (dto.getSource() != null) lead.setSource(dto.getSource());
+		if (dto.getStatus() != null) lead.setStatus(dto.getStatus());
+		if (dto.getAssignedTo() != null) lead.setAssignedTo(dto.getAssignedTo());
+		if (dto.getMetadata() != null) lead.setMetadata(dto.getMetadata());
 		lead.setUpdatedAt(new Date());
 		return toDTO(repository.save(lead));
 	}

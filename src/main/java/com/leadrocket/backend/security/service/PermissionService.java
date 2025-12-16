@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SecurityPermissionService { }
+public class PermissionService {
 
 	private final PermissionRepository repository;
 
-	public SecurityPermissionService(PermissionRepository repository) {
+	public PermissionService(PermissionRepository repository) {
 		this.repository = repository;
 	}
 
