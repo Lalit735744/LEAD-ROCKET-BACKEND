@@ -1,12 +1,7 @@
 package com.leadrocket.backend.common.model;
 
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.EntityListeners;
-import com.leadrocket.backend.common.audit.AuditEntityListener;
 import java.util.Date;
 
-@MappedSuperclass
-@EntityListeners(AuditEntityListener.class)
 public abstract class BaseEntity {
 
 	protected Boolean deleted = false;

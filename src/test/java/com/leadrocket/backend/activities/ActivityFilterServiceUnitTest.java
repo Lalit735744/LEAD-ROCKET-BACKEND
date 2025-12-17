@@ -2,6 +2,7 @@ package com.leadrocket.backend.activities;
 
 import com.leadrocket.backend.activities.filter.ActivityFilterService;
 import com.leadrocket.backend.activities.model.Activity;
+import com.leadrocket.backend.activities.service.ActivityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,8 +23,9 @@ class ActivityFilterServiceUnitTest {
     @BeforeEach
     void setup() {
         mongoTemplate = Mockito.mock(MongoTemplate.class);
-        // we pass null as ActivityService because it's only used by DTO mapping methods
-        filterService = new ActivityFilterService(mongoTemplate, null);
+        // use a real mapper instance
+        ActivityMapper mapper = new ActivityMapper();
+        filterService = new ActivityFilterService(mongoTemplate, mapper);
     }
 
     @Test
@@ -38,4 +40,3 @@ class ActivityFilterServiceUnitTest {
         assertEquals("1", results.get(0).getId());
     }
 }
-

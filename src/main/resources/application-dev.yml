@@ -8,16 +8,5 @@ spring:
       port: 27017
       database: leadrocket_dev
 
-  datasource:
-    url: jdbc:mysql://localhost:3306/leadrocket_dev
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
 server:
   port: 8080

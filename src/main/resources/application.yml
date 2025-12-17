@@ -2,23 +2,8 @@ spring:
   application:
     name: lead-rocket-backend
 
-  data:
-    mongodb:
-      uri: ${MONGO_URI}
-
-  datasource:
-    url: ${MYSQL_URL}
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: false
+# MongoDB connection should be provided via profile or environment in production/dev;
+# do not force a URI here so embedded Mongo can be used in tests when present.
 
 server:
   port: 8080

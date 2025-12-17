@@ -11,18 +11,6 @@ services:
     volumes:
       - mongo_data:/data/db
 
-  mysql:
-    image: mysql:8
-    container_name: leadrocket-mysql
-    restart: always
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: leadrocket
-    volumes:
-      - mysql_data:/var/lib/mysql
-
   app:
     build: .
     container_name: leadrocket-backend
@@ -31,14 +19,9 @@ services:
       - "8080:8080"
     depends_on:
       - mongodb
-      - mysql
     environment:
       SPRING_PROFILES_ACTIVE: prod
       MONGO_URI: mongodb://mongodb:27017/leadrocket
-      MYSQL_URL: jdbc:mysql://mysql:3306/leadrocket
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
 
 volumes:
   mongo_data:
-  mysql_data:
