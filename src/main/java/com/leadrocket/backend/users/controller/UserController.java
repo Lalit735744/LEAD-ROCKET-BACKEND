@@ -4,11 +4,14 @@ import com.leadrocket.backend.users.dto.UserRequestDTO;
 import com.leadrocket.backend.users.dto.UserResponseDTO;
 import com.leadrocket.backend.users.service.UserService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
+import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/users")
 public class UserController {
 
 	private final UserService service;
@@ -18,8 +21,9 @@ public class UserController {
 	}
 
 	@PostMapping
-	public UserResponseDTO create(@RequestBody UserRequestDTO dto) {
-		return service.create(dto);
+	public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserRequestDTO dto) {
+		UserResponseDTO created = service.create(dto);
+		return ResponseEntity.created(URI.create("/api/users/" + created.getId())).body(created);
 	}
 
 	@GetMapping

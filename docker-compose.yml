@@ -20,8 +20,9 @@ services:
     depends_on:
       - mongodb
     environment:
-      SPRING_PROFILES_ACTIVE: prod
-      MONGO_URI: mongodb://mongodb:27017/leadrocket
+      SPRING_PROFILES_ACTIVE: dev
+      MONGO_URI: mongodb://mongodb:27017/leadrocket_dev
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/leadrocket_dev
 
 volumes:
   mongo_data:

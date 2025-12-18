@@ -1,6 +1,8 @@
 spring:
   application:
     name: lead-rocket-backend
+  profiles:
+    active: dev
 
 # MongoDB connection should be provided via profile or environment in production/dev;
 # do not force a URI here so embedded Mongo can be used in tests when present.

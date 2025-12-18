@@ -4,6 +4,9 @@ import com.leadrocket.backend.users.dto.UserRequestDTO;
 import com.leadrocket.backend.users.dto.UserResponseDTO;
 import com.leadrocket.backend.users.model.User;
 import com.leadrocket.backend.users.repository.UserRepository;
+import com.leadrocket.backend.common.exception.ConflictException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -14,6 +17,8 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
+	private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
 	private final UserRepository repository;
 	private final PasswordEncoder passwordEncoder;
 
@@ -23,6 +28,10 @@ public class UserService {
 	}
 
 	public UserResponseDTO create(UserRequestDTO dto) {
+		if (dto.getEmail() != null && repository.existsByEmail(dto.getEmail())) {
+			throw new ConflictException("Email already in use");
+		}
+
 		User user = new User();
 		user.setName(dto.getName());
 		user.setEmail(dto.getEmail());
@@ -34,7 +43,9 @@ public class UserService {
 		}
 		user.setCreatedAt(Instant.now());
 		user.setUpdatedAt(Instant.now());
-		return toDTO(repository.save(user));
+		User saved = repository.save(user);
+		log.info("Created user id={} email={}", saved.getId(), saved.getEmail());
+		return toDTO(saved);
 	}
 
 	public void changePassword(String userId, String oldPassword, String newPassword) {

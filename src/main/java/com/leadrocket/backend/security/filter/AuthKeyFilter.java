@@ -22,7 +22,15 @@ public class AuthKeyFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request,
 	                                HttpServletResponse response,
 	                                FilterChain filterChain)
-			throws ServletException, IOException {
+				throws ServletException, IOException {
+
+		// allow public registration endpoints
+		String path = request.getRequestURI();
+		String method = request.getMethod();
+		if (("/api/users".equals(path) || "/api/v1/users".equals(path)) && ("POST".equalsIgnoreCase(method) || "GET".equalsIgnoreCase(method))) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 
 		String authKey = request.getHeader("AuthKey");
 		if (!authKeyService.isValid(authKey)) {

@@ -5,7 +5,7 @@ import com.leadrocket.backend.reports.service.ReportService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/reports")
+@RequestMapping("/api/reports")
 public class ReportController {
 
 	private final ReportService service;

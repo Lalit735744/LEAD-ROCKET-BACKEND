@@ -1,10 +1,20 @@
 package com.leadrocket.backend.users.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class UserRequestDTO {
 
+	@NotBlank(message = "name is required")
 	private String name;
+
+	@Email(message = "invalid email")
+	@NotBlank(message = "email is required")
 	private String email;
+
 	private String mobile;
+
+	@NotBlank(message = "password is required")
 	private String password;
 
 	public String getName() { return name; }
