@@ -15,6 +15,10 @@ public class TokenService {
 		return provider.generateAccessToken(userId);
 	}
 
+	public String generateAccessToken(String userId, String companyId) {
+		return provider.generateAccessToken(userId, companyId);
+	}
+
 	public String generateRefreshToken(String userId) {
 		return provider.generateRefreshToken(userId);
 	}

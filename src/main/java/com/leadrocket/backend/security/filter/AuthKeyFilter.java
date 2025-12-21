@@ -10,6 +10,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * Servlet filter that validates presence and correctness of a custom AuthKey header.
+ * Important: registration endpoints (/api/users and /api/v1/users) are bypassed so
+ * users can be created without providing the AuthKey.
+ */
 public class AuthKeyFilter extends OncePerRequestFilter {
 
 	private final AuthKeyService authKeyService;

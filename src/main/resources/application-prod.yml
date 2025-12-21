@@ -1,8 +1,0 @@
-spring:
-  application:
-    name: lead-rocket-backend
-
-# Provide production MongoDB URI through environment variable MONGO_URI
-
-server:
-  port: 8080

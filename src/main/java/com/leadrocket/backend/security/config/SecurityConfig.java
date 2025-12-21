@@ -12,6 +12,10 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * Registers servlet filters that apply to certain URL patterns.
+ * These are lower-level servlet filters (not Spring Security filters) used by the app.
+ */
 @Configuration
 public class SecurityConfig {
 
@@ -19,7 +23,7 @@ public class SecurityConfig {
 	public FilterRegistrationBean<AuthKeyFilter> authKeyFilter(AuthKeyService authKeyService) {
 		FilterRegistrationBean<AuthKeyFilter> bean = new FilterRegistrationBean<>();
 		bean.setFilter(new AuthKeyFilter(authKeyService));
-		bean.addUrlPatterns("/api/v1/*");
+		bean.addUrlPatterns("/api/*");
 		bean.setOrder(1);
 		return bean;
 	}
@@ -28,7 +32,8 @@ public class SecurityConfig {
 	public FilterRegistrationBean<JwtFilter> jwtFilter(JwtProvider jwtProvider) {
 		FilterRegistrationBean<JwtFilter> bean = new FilterRegistrationBean<>();
 		bean.setFilter(new JwtFilter(jwtProvider));
-		bean.addUrlPatterns("/api/v1/*");
+		// protect all tenant API endpoints under /api/*
+		bean.addUrlPatterns("/api/*");
 		bean.setOrder(2);
 		return bean;
 	}
@@ -36,7 +41,7 @@ public class SecurityConfig {
 	public FilterRegistrationBean<IpWhitelistFilter> ipFilter() {
 		FilterRegistrationBean<IpWhitelistFilter> bean = new FilterRegistrationBean<>();
 		bean.setFilter(new IpWhitelistFilter());
-		bean.addUrlPatterns("/api/v1/*");
+		bean.addUrlPatterns("/api/*");
 		bean.setOrder(3);
 		return bean;
 	}
@@ -45,7 +50,7 @@ public class SecurityConfig {
 	public FilterRegistrationBean<RateLimitFilter> rateLimitFilter() {
 		FilterRegistrationBean<RateLimitFilter> bean = new FilterRegistrationBean<>();
 		bean.setFilter(new RateLimitFilter());
-		bean.addUrlPatterns("/api/v1/*");
+		bean.addUrlPatterns("/api/*");
 		bean.setOrder(4);
 		return bean;
 	}

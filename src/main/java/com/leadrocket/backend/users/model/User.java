@@ -4,23 +4,39 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.List;
 
+/**
+ * MongoDB document representing an application user.
+ *
+ * Notes:
+ * - Stored in the 'users' collection.
+ * - Passwords are stored as hashed values (never expose raw passwords in responses).
+ * - For tenant-aware design, users may be stored in tenant-specific collections.
+ * - `companyId` indicates which tenant this user belongs to (if stored in tenant collection this may be redundant).
+ * - `roleIds` holds references to role documents in the tenant roles collection.
+ */
 @Document(collection = "users")
 public class User {
 
 	@Id
-	private String id;
+	private String id; // Mongo document id
 
+	// Basic profile fields
 	private String name;
 	private String email;
 	private String mobile;
 	private boolean active;
 
-	// security fields
+	// Tenant membership and roles
+	private String companyId;
+	private List<String> roleIds;
+
+	// Security fields (password should be hashed)
 	private String password;
 	private Instant passwordChangedAt;
 
-	// audit / soft-delete
+	// Audit / soft-delete
 	private boolean deleted = false;
 	private Instant createdAt;
 	private Instant updatedAt;
@@ -39,6 +55,12 @@ public class User {
 
 	public boolean isActive() { return active; }
 	public void setActive(boolean active) { this.active = active; }
+
+	public String getCompanyId() { return companyId; }
+	public void setCompanyId(String companyId) { this.companyId = companyId; }
+
+	public List<String> getRoleIds() { return roleIds; }
+	public void setRoleIds(List<String> roleIds) { this.roleIds = roleIds; }
 
 	public String getPassword() { return password; }
 	public void setPassword(String password) { this.password = password; }

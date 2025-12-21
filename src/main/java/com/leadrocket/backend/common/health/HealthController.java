@@ -4,6 +4,9 @@ import com.leadrocket.backend.users.repository.UserRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Lightweight health endpoints. Useful to verify external dependencies like MongoDB.
+ */
 @RestController
 public class HealthController {
 
@@ -13,6 +16,10 @@ public class HealthController {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Check Mongo connectivity by performing a simple count query against the users collection.
+     * Returns a small text response with the count or an error message.
+     */
     @GetMapping("/health/db")
     public String dbHealth() {
         try {
@@ -23,4 +30,3 @@ public class HealthController {
         }
     }
 }
-

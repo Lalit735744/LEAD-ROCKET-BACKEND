@@ -1,5 +1,8 @@
 package com.leadrocket.backend.users.dto;
 
+/**
+ * DTO returned to clients after user operations. Does not include sensitive fields (password).
+ */
 public class UserResponseDTO {
 
 	private String id;

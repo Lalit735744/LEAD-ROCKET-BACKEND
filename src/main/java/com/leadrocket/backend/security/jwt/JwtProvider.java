@@ -26,13 +26,22 @@ public class JwtProvider {
 	}
 
 	public String generateAccessToken(String userId) {
+		return generateAccessToken(userId, null);
+	}
+
+	/**
+	 * Generate an access token embedding user id as subject and optional company id as claim 'cid'.
+	 */
+	public String generateAccessToken(String userId, String companyId) {
 		Date now = new Date();
-		return Jwts.builder()
+		io.jsonwebtoken.JwtBuilder b = Jwts.builder()
 			.setSubject(userId)
 			.setIssuedAt(now)
-			.setExpiration(new Date(now.getTime() + accessTokenTtlMs))
-			.signWith(getKey(), SignatureAlgorithm.HS256)
-			.compact();
+			.setExpiration(new Date(now.getTime() + accessTokenTtlMs));
+		if (companyId != null) {
+			b.claim("cid", companyId);
+		}
+		return b.signWith(getKey(), SignatureAlgorithm.HS256).compact();
 	}
 
 	public String generateRefreshToken(String userId) {
@@ -53,5 +62,10 @@ public class JwtProvider {
 			.parseClaimsJws(token)
 			.getBody()
 			.getSubject();
+	}
+
+	public String getCompanyId(String token) {
+		Object val = Jwts.parserBuilder().setSigningKey(getKey()).build().parseClaimsJws(token).getBody().get("cid");
+		return val == null ? null : val.toString();
 	}
 }

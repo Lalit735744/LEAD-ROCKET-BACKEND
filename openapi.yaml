@@ -1,0 +1,644 @@
+openapi: 3.0.3
+info:
+  title: LeadRocket Backend API
+  description: OpenAPI specification for LeadRocket backend (tenant-per-company). Covers signup, users, roles/RBAC, leads, notifications (SSE + REST), and reports (sync + async export).
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    SignupRequest:
+      type: object
+      required: [companyName, domain, adminName, adminEmail, adminPassword]
+      properties:
+        companyName:
+          type: string
+        domain:
+          type: string
+        adminName:
+          type: string
+        adminEmail:
+          type: string
+          format: email
+        adminPassword:
+          type: string
+          format: password
+      example:
+        companyName: Acme Builders
+        domain: acme.local
+        adminName: Alice CEO
+        adminEmail: alice@acme.local
+        adminPassword: securePassword
+
+    SignupResponse:
+      type: object
+      properties:
+        companyId:
+          type: string
+        adminUserId:
+          type: string
+        accessToken:
+          type: string
+      example:
+        companyId: company-1
+        adminUserId: user-1
+        accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    UserRequest:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        mobile:
+          type: string
+        password:
+          type: string
+        companyId:
+          type: string
+        roleIds:
+          type: array
+          items:
+            type: string
+      example:
+        name: Bob Manager
+        email: bob@acme.local
+        mobile: 9998887777
+        password: password123
+        companyId: company-1
+        roleIds: [role-1]
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        mobile:
+          type: string
+        active:
+          type: boolean
+      example:
+        id: user-42
+        name: Bob Manager
+        email: bob@acme.local
+        mobile: 9998887777
+        active: true
+
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+      example:
+        id: role-1
+        name: Manager
+        permissions: [LEADS_MANAGE, REPORTS_VIEW]
+
+    Lead:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        source:
+          type: string
+        status:
+          type: string
+        assignedTo:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        id: lead-1
+        name: John Prospect
+        phone: 9991234567
+        email: john@example.com
+        source: Website
+        status: NEW
+        assignedTo: user-2
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+        fromUserId:
+          type: string
+        toUserId:
+          type: string
+        type:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        read:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      example:
+        id: notif-1
+        fromUserId: u123
+        toUserId: u456
+        type: LEAD_ASSIGNED
+        title: New lead assigned
+        body: You have been assigned a new lead: John Doe
+        read: false
+        createdAt: '2025-12-21T10:00:00Z'
+
+    ReportRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        companyId:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, DONE, FAILED]
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        fileName:
+          type: string
+        content:
+          type: string
+        errorMessage:
+          type: string
+      example:
+        id: report-1
+        companyId: company-1
+        type: employee-leads
+        status: PENDING
+        createdAt: '2025-12-21T10:00:00Z'
+
+parameters:
+  companyId:
+    name: companyId
+    in: path
+    description: Tenant company id
+    required: true
+    schema:
+      type: string
+  userId:
+    name: userId
+    in: query
+    description: User id (query param)
+    required: false
+    schema:
+      type: string
+  startDate:
+    name: start
+    in: query
+    description: Start date (YYYY-MM-DD)
+    required: true
+    schema:
+      type: string
+      format: date
+  endDate:
+    name: end
+    in: query
+    description: End date (YYYY-MM-DD)
+    required: true
+    schema:
+      type: string
+      format: date
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/signup:
+    post:
+      summary: Create a new company and CEO admin (public)
+      tags: [Tenancy]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '200':
+          description: Signup created and token returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignupResponse'
+
+  /api/users:
+    post:
+      summary: Create a user (global or tenant-scoped when companyId supplied)
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: Created user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '409':
+          description: Conflict (email exists)
+
+  /api/{companyId}/users:
+    get:
+      summary: List tenant users
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+      responses:
+        '200':
+          description: Array of tenant users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+
+  /api/{companyId}/roles:
+    post:
+      summary: Create a role (CEO only)
+      tags: [RBAC]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+      responses:
+        '200':
+          description: Created role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '403':
+          description: Forbidden (not CEO)
+
+    get:
+      summary: List roles for company
+      tags: [RBAC]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+      responses:
+        '200':
+          description: Roles list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Role'
+
+  /api/{companyId}/users/{userId}/roles:
+    post:
+      summary: Assign roles to a user (CEO only)
+      tags: [RBAC]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
+  /api/{companyId}/users/{userId}/roles/{roleId}:
+    delete:
+      summary: Remove role from user (CEO only)
+      tags: [RBAC]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
+  /api/{companyId}/leads:
+    post:
+      summary: Create tenant lead (will generate notification if assigned)
+      tags: [Leads]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lead'
+      responses:
+        '200':
+          description: Created lead
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lead'
+
+  /leads:
+    get:
+      summary: Global leads listing (legacy)
+      tags: [Leads]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Array of leads
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lead'
+
+  /api/{companyId}/notifications:
+    post:
+      summary: Create a notification (also triggers SSE push)
+      tags: [Notifications]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+        - name: fromUserId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: toUserId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: title
+          in: query
+          schema:
+            type: string
+        - name: body
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Created notification
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+
+    get:
+      summary: List notifications for user
+      tags: [Notifications]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+        - $ref: '#/components/parameters/userId'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Array of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+
+  /api/{companyId}/notifications/{id}/read:
+    put:
+      summary: Mark notification read
+      tags: [Notifications]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Updated notification
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+
+  /api/{companyId}/notifications/subscribe:
+    get:
+      summary: Subscribe to in-app notifications via Server-Sent Events (SSE)
+      tags: [Notifications]
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: SSE stream of notifications
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /api/{companyId}/reports/employee-leads:
+    get:
+      summary: Aggregate leads per employee within date range
+      tags: [Reports]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+        - $ref: '#/components/parameters/startDate'
+        - $ref: '#/components/parameters/endDate'
+      responses:
+        '200':
+          description: Aggregation results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    leadCount:
+                      type: integer
+                    convertedCount:
+                      type: integer
+
+  /api/{companyId}/reports/employee-leads/csv:
+    get:
+      summary: CSV download for employee lead aggregation (sync)
+      tags: [Reports]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+        - $ref: '#/components/parameters/startDate'
+        - $ref: '#/components/parameters/endDate'
+      responses:
+        '200':
+          description: CSV attachment
+          content:
+            text/csv:
+              schema:
+                type: string
+
+  /api/{companyId}/employee-leads/export:
+    post:
+      summary: Schedule async export of employee-leads (background job)
+      tags: [Reports]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+        - $ref: '#/components/parameters/startDate'
+        - $ref: '#/components/parameters/endDate'
+      responses:
+        '200':
+          description: Report request accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportRecord'
+
+  /api/{companyId}/export/{reportId}:
+    get:
+      summary: Download async export result when ready
+      tags: [Reports]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/companyId'
+        - name: reportId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: CSV file
+          content:
+            text/csv:
+              schema:
+                type: string
+        '409':
+          description: Report not ready or failed
+
+
+tags:
+  - name: Tenancy
+    description: Company and signup related operations
+  - name: Users
+    description: User create/list operations
+  - name: RBAC
+    description: Roles and permissions management (CEO only)
+  - name: Leads
+    description: Lead CRUD and assignment
+  - name: Notifications
+    description: In-app push notifications (SSE + REST)
+  - name: Reports
+    description: Aggregation and exports
+
+```
