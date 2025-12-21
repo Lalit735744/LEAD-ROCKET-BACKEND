@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-class LeadServiceUnitTest {
+class leadServiceUnitTest {
 
     private LeadRepository repository;
     private LeadService service;

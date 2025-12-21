@@ -8,27 +8,40 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 @Service
-public class LeadService {
+public class LeadNewService {
 
     private final TenantLeadRepository leadRepository;
     private final NotificationService notificationService;
 
-    public LeadService(TenantLeadRepository leadRepository, NotificationService notificationService) {
+    public LeadNewService(
+            TenantLeadRepository leadRepository,
+            NotificationService notificationService
+    ) {
         this.leadRepository = leadRepository;
         this.notificationService = notificationService;
     }
 
     /**
-     * Create a lead in tenant collection. If assignedTo is set, send a notification to that user.
+     * Create a lead in tenant collection.
+     * If assignedTo is set, send a notification to that user.
      */
     public Lead createLead(String companyId, Lead lead, String createdBy) {
         lead.setCreatedAt(new Date());
         lead.setUpdatedAt(new Date());
+
         Lead saved = leadRepository.save(companyId, lead);
+
         if (saved.getAssignedTo() != null) {
-            notificationService.send(companyId, createdBy, saved.getAssignedTo(), "LEAD_ASSIGNED", "New Lead Assigned", "You have been assigned a new lead: " + saved.getName());
+            notificationService.send(
+                    companyId,
+                    createdBy,
+                    saved.getAssignedTo(),
+                    "LEAD_ASSIGNED",
+                    "New Lead Assigned",
+                    "You have been assigned a new lead: " + saved.getName()
+            );
         }
+
         return saved;
     }
 }
-

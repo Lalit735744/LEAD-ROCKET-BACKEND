@@ -1,11 +1,19 @@
 spring:
   application:
     name: lead-rocket-backend
+
   profiles:
     active: dev
 
-# MongoDB connection should be provided via profile or environment in production/dev;
-# do not force a URI here so embedded Mongo can be used in tests when present.
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ${REDIS_PASSWORD}
+      timeout: 2s
+
+  cache:
+    type: redis
 
 server:
   port: 8080

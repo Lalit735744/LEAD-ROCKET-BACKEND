@@ -4,11 +4,7 @@ spring:
 
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: leadrocket_dev
-      # Prefer URI if available; this is a fallback for local dev
-      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/leadrocket_dev}
+      uri: mongodb+srv://laptoplalit4_db_user:Lalit%407357@cluster0.aaa9fsk.mongodb.net/leadrocket_dev?appName=Cluster0
 
 server:
   port: 8080
@@ -16,5 +12,5 @@ server:
 security:
   jwt:
     secret: CHANGE_THIS_DEV_SECRET_CHANGE_ME
-    accessTokenTtlMs: 86400000 # 1 day for dev
-    refreshTokenTtlMs: 2592000000 # 30 days
+    accessTokenTtlMs: 86400000
+    refreshTokenTtlMs: 2592000000
