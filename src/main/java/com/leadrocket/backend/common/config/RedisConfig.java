@@ -17,13 +17,9 @@ import java.time.Duration;
 public class RedisConfig {
 
 	@Bean
-	public LettuceConnectionFactory redisConnectionFactory() {
-		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration("localhost", 6379);
-		return new LettuceConnectionFactory(config);
-	}
+	public RedisTemplate<String, Object> redisTemplate(
+			LettuceConnectionFactory connectionFactory) {
 
-	@Bean
-	public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory connectionFactory) {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(connectionFactory);
 		template.setKeySerializer(new StringRedisSerializer());
@@ -32,14 +28,16 @@ public class RedisConfig {
 	}
 
 	@Bean
-	public CacheManager cacheManager(LettuceConnectionFactory connectionFactory) {
-		RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-				.entryTtl(Duration.ofMinutes(10))
-				.disableCachingNullValues();
+	public CacheManager cacheManager(
+			LettuceConnectionFactory connectionFactory) {
+
+		RedisCacheConfiguration cacheConfig =
+				RedisCacheConfiguration.defaultCacheConfig()
+						.entryTtl(Duration.ofMinutes(10))
+						.disableCachingNullValues();
 
 		return RedisCacheManager.builder(connectionFactory)
 				.cacheDefaults(cacheConfig)
 				.build();
 	}
 }
-
