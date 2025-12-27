@@ -1,7 +1,7 @@
-// Creates default platform admin user on application startup
-// This user is lifetime and not affected by subscription or trial
-
 package com.leadrocket.backend.bootstrap;
+
+// What this file is for:
+// Creates a lifetime platform admin user at startup (no subscription)
 
 import com.leadrocket.backend.users.model.User;
 import com.leadrocket.backend.users.model.UserType;
@@ -29,23 +29,21 @@ public class PlatformUserBootstrap implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        String adminEmail = "admin@estateflow.com";
+        String adminEmail = "admin@gmail.com";
 
         if (userRepository.existsByEmail(adminEmail)) {
-            return; // already created
+            return;
         }
 
         User admin = new User();
-        admin.setUserType(UserType.PLATFORM);
-        admin.setName("Platform Admin");
         admin.setEmail(adminEmail);
-        admin.setPassword(passwordEncoder.encode("ChangeThisImmediately"));
+        admin.setName("MR.X");
+        admin.setPassword(passwordEncoder.encode("Lalit@123"));
+        admin.setUserType(UserType.PLATFORM);
         admin.setActive(true);
         admin.setCreatedAt(Instant.now());
         admin.setUpdatedAt(Instant.now());
 
         userRepository.save(admin);
-
-        System.out.println("✅ Platform admin user created: " + adminEmail);
     }
 }
