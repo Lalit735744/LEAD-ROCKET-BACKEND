@@ -2,7 +2,7 @@
 
 package com.leadrocket.backend.users.repository;
 
-import com.leadrocket.backend.tenancy.service.TenantCollectionHelper;
+import com.leadrocket.backend.tenancy.TenantCollectionHelper;
 import com.leadrocket.backend.users.model.User;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;

@@ -6,7 +6,7 @@ import com.leadrocket.backend.users.dto.UserCreateRequestDTO;
 import com.leadrocket.backend.users.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-
+import com.leadrocket.backend.users.dto.UserResponseDTO;
 import java.util.List;
 
 @RestController

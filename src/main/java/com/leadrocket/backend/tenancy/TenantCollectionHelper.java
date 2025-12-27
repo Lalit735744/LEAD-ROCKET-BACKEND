@@ -1,7 +1,4 @@
-// Helper for resolving tenant-specific MongoDB collection names
-// Keeps all collection naming logic in one place
-
-package com.leadrocket.backend.tenancy.service;
+package com.leadrocket.backend.tenancy;
 
 import org.springframework.stereotype.Component;
 
@@ -12,6 +9,10 @@ public class TenantCollectionHelper {
         return "company_" + companyId + "_users";
     }
 
+    public String rolesCollection(String companyId) {
+        return "company_" + companyId + "_roles";
+    }
+
     public String leadsCollection(String companyId) {
         return "company_" + companyId + "_leads";
     }
@@ -20,11 +21,11 @@ public class TenantCollectionHelper {
         return "company_" + companyId + "_activities";
     }
 
-    public String notificationsCollection(String companyId) {
-        return "company_" + companyId + "_notifications";
+    public String teamsCollection(String companyId) {
+        return "company_" + companyId + "_teams";
     }
 
-    public String rolesCollection(String companyId) {
-        return "company_" + companyId + "_roles";
+    public String notificationsCollection(String companyId) {
+        return "company_" + companyId + "_notifications";
     }
 }

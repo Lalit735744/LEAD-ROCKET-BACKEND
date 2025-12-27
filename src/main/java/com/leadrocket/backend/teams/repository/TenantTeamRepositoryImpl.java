@@ -2,7 +2,7 @@
 
 package com.leadrocket.backend.teams.repository;
 
-import com.leadrocket.backend.tenancy.service.TenantCollectionHelper;
+import com.leadrocket.backend.tenancy.TenantCollectionHelper;
 import com.leadrocket.backend.teams.model.Team;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;

@@ -5,6 +5,7 @@ package com.leadrocket.backend.users.service;
 import com.leadrocket.backend.common.exception.ConflictException;
 import com.leadrocket.backend.common.exception.NotFoundException;
 import com.leadrocket.backend.users.dto.UserCreateRequestDTO;
+import com.leadrocket.backend.users.dto.UserResponseDTO;
 import com.leadrocket.backend.users.model.User;
 import com.leadrocket.backend.users.repository.TenantUserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;

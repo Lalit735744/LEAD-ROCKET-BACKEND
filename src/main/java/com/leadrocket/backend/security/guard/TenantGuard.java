@@ -1,23 +1,21 @@
-// Guards tenant access across controllers and services
-
 package com.leadrocket.backend.security.guard;
 
-import com.leadrocket.backend.common.exception.ForbiddenException;
 import com.leadrocket.backend.security.context.AuthContext;
+import com.leadrocket.backend.security.authkey.AuthSession;
 
-public final class TenantGuard {
+// Guards against cross-tenant access
+public class TenantGuard {
 
-    private TenantGuard() {}
-
-    public static void verifyCompany(String pathCompanyId) {
+    public static void checkCompany(String companyId) {
 
         AuthSession session = AuthContext.get();
-        if (session == null) {
-            throw new ForbiddenException("Unauthenticated");
+
+        if (session == null || session.getCompanyId() == null) {
+            throw new RuntimeException("Unauthenticated request");
         }
 
-        if (!pathCompanyId.equals(session.getCompanyId())) {
-            throw new ForbiddenException("Cross-tenant access denied");
+        if (!companyId.equals(session.getCompanyId())) {
+            throw new RuntimeException("Cross-tenant access denied");
         }
     }
 }

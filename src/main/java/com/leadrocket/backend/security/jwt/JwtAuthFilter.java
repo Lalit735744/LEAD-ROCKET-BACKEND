@@ -1,7 +1,6 @@
-// Extracts JWT, validates it, and sets AuthContext
-
 package com.leadrocket.backend.security.jwt;
 
+import com.leadrocket.backend.security.authkey.AuthSession;
 import com.leadrocket.backend.security.context.AuthContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,20 +25,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        try {
-            String token = validator.resolveToken(request);
+        String token = validator.resolveToken(request);
 
-            if (token != null && validator.validate(token)) {
-                String userId = validator.getUserId(token);
-                String companyId = validator.getCompanyId(token);
-
-                AuthContext.set(new AuthSession(userId, companyId));
-            }
-
-            filterChain.doFilter(request, response);
-        } finally {
-            // VERY IMPORTANT: prevent memory leaks
-            AuthContext.clear();
+        if (token != null && validator.validate(token)) {
+            String userId = validator.getUserId(token);
+            String companyId = validator.getCompanyId(token);
+            AuthContext.set(new AuthSession(userId, companyId));
         }
+
+        filterChain.doFilter(request, response);
+        AuthContext.clear();
     }
 }
