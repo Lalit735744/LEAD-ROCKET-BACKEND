@@ -1,21 +1,21 @@
 package com.leadrocket.backend.security.guard;
 
+// What this file is for:
+// Guards tenant routes by ensuring authenticated user belongs to tenant
+
 import com.leadrocket.backend.security.context.AuthContext;
 import com.leadrocket.backend.security.authkey.AuthSession;
+import org.springframework.stereotype.Component;
 
-// Guards against cross-tenant access
+@Component
 public class TenantGuard {
 
-    public static void checkCompany(String companyId) {
-
+    // Validate tenant access
+    public void check(String companyId) {
         AuthSession session = AuthContext.get();
 
-        if (session == null || session.getCompanyId() == null) {
-            throw new RuntimeException("Unauthenticated request");
-        }
-
-        if (!companyId.equals(session.getCompanyId())) {
-            throw new RuntimeException("Cross-tenant access denied");
+        if (session == null || !companyId.equals(session.getCompanyId())) {
+            throw new RuntimeException("Tenant access denied");
         }
     }
 }
