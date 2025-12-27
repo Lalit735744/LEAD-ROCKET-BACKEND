@@ -1,28 +1,32 @@
+// Service layer for generating reports
+// Orchestrates aggregations and assembles DTOs
+
 package com.leadrocket.backend.reports.service;
 
-import java.util.HashMap;
-
-import com.leadrocket.backend.reports.dto.ReportResponseDTO;
-import org.springframework.stereotype.Service;
 import com.leadrocket.backend.reports.aggregation.LeadReportAggregation;
+import com.leadrocket.backend.reports.dto.DashboardReportDTO;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ReportService {
 
-	private final LeadReportAggregation leadAgg;
+	private final LeadReportAggregation leadAggregation;
 
-	public ReportService(LeadReportAggregation leadAgg) {
-		this.leadAgg = leadAgg;
+	public ReportService(LeadReportAggregation leadAggregation) {
+		this.leadAggregation = leadAggregation;
 	}
 
-	public Object leadStatusReport() {
-		return leadAgg.leadsByStatus();
-	}
+	/**
+	 * Dashboard report for company.
+	 */
+	public DashboardReportDTO getDashboardReport(String companyId) {
 
-	public ReportResponseDTO getDashboardReport() {
-		ReportResponseDTO dto = new ReportResponseDTO();
-		dto.setTitle("Dashboard Report");
-		dto.setData(new HashMap<>());
+		DashboardReportDTO dto = new DashboardReportDTO();
+		dto.setTitle("Dashboard Overview");
+		dto.setLeadStatusSummary(
+				leadAggregation.leadsByStatus(companyId)
+		);
+
 		return dto;
 	}
 }

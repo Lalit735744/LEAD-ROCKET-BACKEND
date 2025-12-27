@@ -1,28 +1,39 @@
+// Activity entity
+// Represents a single activity or follow-up done for a lead inside a company
+
 package com.leadrocket.backend.activities.model;
 
+import com.leadrocket.backend.common.model.BaseEntity;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.Map;
 
-@Document(collection = "activities")
-public class Activity {
+public class Activity extends BaseEntity {
 
 	@Id
 	private String id;
 
+	// Tenant scope
+	private String companyId;
+
+	// Business fields
 	private String leadId;
 	private String userId;
-	private String activityType;
-	private String status;
+	private String type;      // CALL, VISIT, FOLLOW_UP etc
+	private String status;    // PENDING, DONE, CANCELLED
 	private String remarks;
 	private Date followUpDate;
-	private Date createdAt;
+
+	// Extra dynamic fields
 	private Map<String, Object> metadata;
 
+	// Getters & setters
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
+
+	public String getCompanyId() { return companyId; }
+	public void setCompanyId(String companyId) { this.companyId = companyId; }
 
 	public String getLeadId() { return leadId; }
 	public void setLeadId(String leadId) { this.leadId = leadId; }
@@ -30,8 +41,8 @@ public class Activity {
 	public String getUserId() { return userId; }
 	public void setUserId(String userId) { this.userId = userId; }
 
-	public String getActivityType() { return activityType; }
-	public void setActivityType(String activityType) { this.activityType = activityType; }
+	public String getType() { return type; }
+	public void setType(String type) { this.type = type; }
 
 	public String getStatus() { return status; }
 	public void setStatus(String status) { this.status = status; }
@@ -41,9 +52,6 @@ public class Activity {
 
 	public Date getFollowUpDate() { return followUpDate; }
 	public void setFollowUpDate(Date followUpDate) { this.followUpDate = followUpDate; }
-
-	public Date getCreatedAt() { return createdAt; }
-	public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 
 	public Map<String, Object> getMetadata() { return metadata; }
 	public void setMetadata(Map<String, Object> metadata) { this.metadata = metadata; }

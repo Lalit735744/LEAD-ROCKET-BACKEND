@@ -1,3 +1,5 @@
+// MongoTemplate based tenant repository for leads
+
 package com.leadrocket.backend.leads.repository;
 
 import com.leadrocket.backend.leads.model.Lead;
@@ -28,7 +30,14 @@ public class TenantLeadRepositoryImpl implements TenantLeadRepository {
 
     @Override
     public Optional<Lead> findById(String companyId, String id) {
-        return Optional.ofNullable(mongoTemplate.findById(id, Lead.class, helper.leadsCollection(companyId)));
+        return Optional.ofNullable(
+                mongoTemplate.findById(id, Lead.class, helper.leadsCollection(companyId))
+        );
+    }
+
+    @Override
+    public List<Lead> findAll(String companyId) {
+        return mongoTemplate.findAll(Lead.class, helper.leadsCollection(companyId));
     }
 
     @Override
@@ -37,4 +46,3 @@ public class TenantLeadRepositoryImpl implements TenantLeadRepository {
         return mongoTemplate.find(q, Lead.class, helper.leadsCollection(companyId));
     }
 }
-

@@ -1,8 +1,6 @@
 package com.leadrocket.backend.leads;
 
-import com.leadrocket.backend.leads.dto.LeadServiceDTO;
 import com.leadrocket.backend.leads.model.Lead;
-import com.leadrocket.backend.leads.repository.LeadRepository;
 import com.leadrocket.backend.leads.service.LeadService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

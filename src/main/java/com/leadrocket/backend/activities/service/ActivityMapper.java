@@ -1,25 +1,26 @@
+// Maps Activity entity to response DTO
+
 package com.leadrocket.backend.activities.service;
 
-import com.leadrocket.backend.activities.dto.ActivityDTO;
+import com.leadrocket.backend.activities.dto.ActivityResponseDTO;
 import com.leadrocket.backend.activities.model.Activity;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ActivityMapper {
 
-    public ActivityDTO toDTO(Activity activity) {
-        if (activity == null) return null;
-        ActivityDTO dto = new ActivityDTO();
-        dto.setId(activity.getId());
-        dto.setLeadId(activity.getLeadId());
-        dto.setUserId(activity.getUserId());
-        dto.setActivityType(activity.getActivityType());
-        dto.setStatus(activity.getStatus());
-        dto.setRemarks(activity.getRemarks());
-        dto.setFollowUpDate(activity.getFollowUpDate());
-        dto.setCreatedAt(activity.getCreatedAt());
-        dto.setMetadata(activity.getMetadata());
+    public ActivityResponseDTO toResponse(Activity a) {
+        ActivityResponseDTO dto = new ActivityResponseDTO();
+        dto.setId(a.getId());
+        dto.setLeadId(a.getLeadId());
+        dto.setUserId(a.getUserId());
+        dto.setType(a.getType());
+        dto.setStatus(a.getStatus());
+        dto.setRemarks(a.getRemarks());
+        dto.setFollowUpDate(a.getFollowUpDate());
+        dto.setCreatedAt(a.getCreatedAt() != null ? a.getCreatedAt().toEpochMilli() != 0 ?
+                java.util.Date.from(a.getCreatedAt()) : null : null);
+        dto.setMetadata(a.getMetadata());
         return dto;
     }
 }
-

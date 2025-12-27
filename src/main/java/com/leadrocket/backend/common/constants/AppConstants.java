@@ -1,10 +1,11 @@
+// Global constants
+
 package com.leadrocket.backend.common.constants;
 
-public class AppConstants {
+public final class AppConstants {
 
-	public static final String SUCCESS = "success";
-	public static final String ERROR = "error";
+	private AppConstants() {}
 
-	private AppConstants() {
-	}
+	public static final String SYSTEM_USER = "SYSTEM";
+	public static final int DEFAULT_PAGE_SIZE = 10;
 }

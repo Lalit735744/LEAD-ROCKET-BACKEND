@@ -1,11 +1,16 @@
 package com.leadrocket.backend.common.health;
 
-import com.leadrocket.backend.users.repository.UserRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Lightweight health endpoints. Useful to verify external dependencies like MongoDB.
+ * HealthController
+ *
+ * Provides lightweight health-check endpoints.
+ * These endpoints are useful for:
+ *  - Verifying MongoDB connectivity
+ *  - EC2 / Load Balancer health checks
+ *  - Debugging production issues quickly
  */
 @RestController
 public class HealthController {
@@ -17,16 +22,18 @@ public class HealthController {
     }
 
     /**
-     * Check Mongo connectivity by performing a simple count query against the users collection.
-     * Returns a small text response with the count or an error message.
+     * Database health check.
+     *
+     * Performs a simple count query on users collection.
+     * If MongoDB is unreachable, this endpoint will fail.
      */
     @GetMapping("/health/db")
-    public String dbHealth() {
+    public String databaseHealth() {
         try {
             long count = userRepository.count();
-            return "mongo-ok: users=" + count;
+            return "STATUS: OK | MongoDB Connected | users=" + count;
         } catch (Exception ex) {
-            return "mongo-error: " + ex.getMessage();
+            return "STATUS: ERROR | MongoDB Failure | " + ex.getMessage();
         }
     }
 }

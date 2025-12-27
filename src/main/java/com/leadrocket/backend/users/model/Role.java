@@ -1,18 +1,19 @@
+// Role entity
+// Defines permissions for tenant users
+
 package com.leadrocket.backend.users.model;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-/**
- * Role definition stored per-company.
- */
 public class Role {
+
     @Id
     private String id;
-    private String name;
-    private List<String> permissions;
+
+    private String name;                // CEO, MANAGER, SALES
+    private List<String> permissions;   // LEAD_VIEW, PAYMENT_VIEW, ALL
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -23,4 +24,3 @@ public class Role {
     public List<String> getPermissions() { return permissions; }
     public void setPermissions(List<String> permissions) { this.permissions = permissions; }
 }
-

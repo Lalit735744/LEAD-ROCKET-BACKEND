@@ -1,37 +1,40 @@
+// DTO used for company signup
+
 package com.leadrocket.backend.tenancy.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public class SignupRequestDTO {
+
     @NotBlank
     private String companyName;
 
-    private String domain;
-
     @NotBlank
     @Email
-    private String adminEmail;
+    private String email;
 
     @NotBlank
-    private String adminPassword;
+    private String mobile;
 
     @NotBlank
-    private String adminName;
+    private String ceoName;
+
+    @NotBlank
+    private String ceoPassword;
 
     public String getCompanyName() { return companyName; }
     public void setCompanyName(String companyName) { this.companyName = companyName; }
 
-    public String getDomain() { return domain; }
-    public void setDomain(String domain) { this.domain = domain; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getAdminEmail() { return adminEmail; }
-    public void setAdminEmail(String adminEmail) { this.adminEmail = adminEmail; }
+    public String getMobile() { return mobile; }
+    public void setMobile(String mobile) { this.mobile = mobile; }
 
-    public String getAdminPassword() { return adminPassword; }
-    public void setAdminPassword(String adminPassword) { this.adminPassword = adminPassword; }
+    public String getCeoName() { return ceoName; }
+    public void setCeoName(String ceoName) { this.ceoName = ceoName; }
 
-    public String getAdminName() { return adminName; }
-    public void setAdminName(String adminName) { this.adminName = adminName; }
+    public String getCeoPassword() { return ceoPassword; }
+    public void setCeoPassword(String ceoPassword) { this.ceoPassword = ceoPassword; }
 }
-

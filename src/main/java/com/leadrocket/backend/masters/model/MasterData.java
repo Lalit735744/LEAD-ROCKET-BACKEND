@@ -1,3 +1,6 @@
+// MasterData entity
+// Represents static configuration data like lead status, sources, activity types
+
 package com.leadrocket.backend.masters.model;
 
 import org.springframework.data.annotation.Id;
@@ -9,10 +12,17 @@ public class MasterData {
 	@Id
 	private String id;
 
+	// Grouping key (LEAD_STATUS, ACTIVITY_TYPE, SOURCE etc)
 	private String type;
+
+	// Machine-readable key
 	private String key;
+
+	// Human-readable value
 	private String value;
-	private boolean active;
+
+	// Whether this master entry is active
+	private boolean active = true;
 
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }

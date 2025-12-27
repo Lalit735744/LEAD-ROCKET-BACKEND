@@ -1,28 +1,38 @@
+// Core business logic for lead management
+
 package com.leadrocket.backend.leads.service;
 
-import com.leadrocket.backend.leads.dto.LeadServiceDTO;
+import com.leadrocket.backend.common.exception.NotFoundException;
+import com.leadrocket.backend.leads.dto.LeadRequestDTO;
+import com.leadrocket.backend.leads.dto.LeadResponseDTO;
 import com.leadrocket.backend.leads.model.Lead;
-import com.leadrocket.backend.leads.repository.LeadRepository;
+import com.leadrocket.backend.leads.repository.TenantLeadRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.CacheEvict;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.leadrocket.backend.common.exception.NotFoundException;
 
 @Service
 public class LeadService {
 
-	private final LeadRepository repository;
+	private final TenantLeadRepository repository;
+	private final LeadMapper mapper;
+	private final NotificationService notificationService;
 
-	public LeadService(LeadRepository repository) {
+	public LeadService(
+			TenantLeadRepository repository,
+			LeadMapper mapper,
+			NotificationService notificationService
+	) {
 		this.repository = repository;
+		this.mapper = mapper;
+		this.notificationService = notificationService;
 	}
 
-	public LeadServiceDTO create(LeadServiceDTO dto) {
+	public LeadResponseDTO create(String companyId, String createdBy, LeadRequestDTO dto) {
+
 		Lead lead = new Lead();
+		lead.setCompanyId(companyId);
 		lead.setName(dto.getName());
 		lead.setPhone(dto.getPhone());
 		lead.setEmail(dto.getEmail());
@@ -30,52 +40,49 @@ public class LeadService {
 		lead.setStatus(dto.getStatus());
 		lead.setAssignedTo(dto.getAssignedTo());
 		lead.setMetadata(dto.getMetadata());
-		lead.setCreatedAt(new Date());
-		lead.setUpdatedAt(new Date());
 
-		return toDTO(repository.save(lead));
+		Lead saved = repository.save(companyId, lead);
+
+		// Notify assigned user if present
+		if (saved.getAssignedTo() != null) {
+			notificationService.send(
+					companyId,
+					createdBy,
+					saved.getAssignedTo(),
+					"LEAD_ASSIGNED",
+					"New Lead Assigned",
+					"You have been assigned a new lead: " + saved.getName()
+			);
+		}
+
+		return mapper.toResponse(saved);
 	}
-	@CacheEvict(value = "leads", key = "#leadId")
-	public void softDelete(String leadId) {
-		Lead lead = repository.findById(leadId).orElseThrow(() -> new NotFoundException("Lead not found: " + leadId));
-		lead.setDeleted(true);
-		lead.setUpdatedAt(new Date());
-		repository.save(lead);
+
+	public LeadResponseDTO getById(String companyId, String leadId) {
+		Lead lead = repository.findById(companyId, leadId)
+				.orElseThrow(() -> new NotFoundException("Lead not found"));
+		return mapper.toResponse(lead);
 	}
 
-
-	public List<LeadServiceDTO> getAll() {
-		return repository.findAll()
+	public List<LeadResponseDTO> getAll(String companyId) {
+		return repository.findAll(companyId)
 				.stream()
-				.filter(l -> l.getDeleted() == null || !l.getDeleted())
-				.map(this::toDTO)
+				.map(mapper::toResponse)
 				.collect(Collectors.toList());
 	}
 
-	public List<LeadServiceDTO> getByUser(String userId) {
-		return repository.findByAssignedTo(userId)
+	public List<LeadResponseDTO> getByUser(String companyId, String userId) {
+		return repository.findByAssignedTo(companyId, userId)
 				.stream()
-				.map(this::toDTO)
+				.map(mapper::toResponse)
 				.collect(Collectors.toList());
 	}
 
-	@CacheEvict(value = "leads", key = "#leadId")
-	public LeadServiceDTO updateStatus(String leadId, String status) {
-		Lead lead = repository.findById(leadId).orElseThrow(() -> new NotFoundException("Lead not found: " + leadId));
-		lead.setStatus(status);
-		lead.setUpdatedAt(new Date());
-		return toDTO(repository.save(lead));
-	}
+	public LeadResponseDTO update(String companyId, String leadId, LeadRequestDTO dto) {
 
-	@Cacheable(value = "leads", key = "#id")
-	public LeadServiceDTO getById(String id) {
-		Lead lead = repository.findById(id).orElseThrow(() -> new NotFoundException("Lead not found: " + id));
-		return toDTO(lead);
-	}
+		Lead lead = repository.findById(companyId, leadId)
+				.orElseThrow(() -> new NotFoundException("Lead not found"));
 
-	@CacheEvict(value = "leads", key = "#dto.id")
-	public LeadServiceDTO update(LeadServiceDTO dto) {
-		Lead lead = repository.findById(dto.getId()).orElseThrow(() -> new NotFoundException("Lead not found: " + dto.getId()));
 		if (dto.getName() != null) lead.setName(dto.getName());
 		if (dto.getPhone() != null) lead.setPhone(dto.getPhone());
 		if (dto.getEmail() != null) lead.setEmail(dto.getEmail());
@@ -83,22 +90,7 @@ public class LeadService {
 		if (dto.getStatus() != null) lead.setStatus(dto.getStatus());
 		if (dto.getAssignedTo() != null) lead.setAssignedTo(dto.getAssignedTo());
 		if (dto.getMetadata() != null) lead.setMetadata(dto.getMetadata());
-		lead.setUpdatedAt(new Date());
-		return toDTO(repository.save(lead));
-	}
 
-	public LeadServiceDTO toDTO(Lead lead) {
-		LeadServiceDTO dto = new LeadServiceDTO();
-		dto.setId(lead.getId());
-		dto.setName(lead.getName());
-		dto.setPhone(lead.getPhone());
-		dto.setEmail(lead.getEmail());
-		dto.setSource(lead.getSource());
-		dto.setStatus(lead.getStatus());
-		dto.setAssignedTo(lead.getAssignedTo());
-		dto.setCreatedAt(lead.getCreatedAt());
-		dto.setUpdatedAt(lead.getUpdatedAt());
-		dto.setMetadata(lead.getMetadata());
-		return dto;
+		return mapper.toResponse(repository.save(companyId, lead));
 	}
 }

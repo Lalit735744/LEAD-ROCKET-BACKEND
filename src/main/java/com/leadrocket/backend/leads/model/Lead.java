@@ -1,30 +1,40 @@
+// Lead entity
+// Represents a single lead belonging to a company (tenant scoped)
+
 package com.leadrocket.backend.leads.model;
 
+import com.leadrocket.backend.common.model.BaseEntity;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
 import java.util.Map;
 
-@Document(collection = "leads")
-public class Lead {
+public class Lead extends BaseEntity {
 
 	@Id
 	private String id;
 
+	// Tenant scope
+	private String companyId;
+
+	// Lead basic info
 	private String name;
 	private String phone;
 	private String email;
 	private String source;
 	private String status;
-	private String assignedTo;
-	private Date createdAt;
-	private Date updatedAt;
-	private Map<String, Object> metadata;
-	private Boolean deleted = false;
 
+	// Assignment
+	private String assignedTo;
+
+	// Extra dynamic fields
+	private Map<String, Object> metadata;
+
+	// Getters & setters
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
+
+	public String getCompanyId() { return companyId; }
+	public void setCompanyId(String companyId) { this.companyId = companyId; }
 
 	public String getName() { return name; }
 	public void setName(String name) { this.name = name; }
@@ -44,15 +54,6 @@ public class Lead {
 	public String getAssignedTo() { return assignedTo; }
 	public void setAssignedTo(String assignedTo) { this.assignedTo = assignedTo; }
 
-	public Date getCreatedAt() { return createdAt; }
-	public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
-
-	public Date getUpdatedAt() { return updatedAt; }
-	public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
-
 	public Map<String, Object> getMetadata() { return metadata; }
 	public void setMetadata(Map<String, Object> metadata) { this.metadata = metadata; }
-
-	public Boolean getDeleted() { return deleted; }
-	public void setDeleted(Boolean deleted) { this.deleted = deleted; }
 }

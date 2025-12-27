@@ -1,22 +1,17 @@
+# Base application configuration
+# Environment-specific values are overridden via profiles
+
 spring:
   application:
-    name: lead-rocket-backend
+    name: estateflow-backend
 
   profiles:
-    active: dev
-
-    data:
-      redis:
-        host: redis-11566.crce206.ap-south-1-1.ec2.cloud.redislabs.com
-        port: 11566
-        username: default
-        password: ${REDIS_PASSWORD}
-        ssl: true
-        timeout: 5s
-
-    cache:
-      type: redis
-
+    active: dev   # default profile (override in prod via env)
 
 server:
   port: 8080
+
+security:
+  jwt:
+    accessTokenTtlMs: 86400000        # 1 day
+    refreshTokenTtlMs: 2592000000     # 30 days

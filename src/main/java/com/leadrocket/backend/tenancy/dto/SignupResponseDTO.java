@@ -1,17 +1,17 @@
+// DTO returned after successful signup
+
 package com.leadrocket.backend.tenancy.dto;
 
 public class SignupResponseDTO {
+
     private String companyId;
-    private String adminUserId;
-    private String accessToken;
+    private String message;
+
+    public SignupResponseDTO(String companyId, String message) {
+        this.companyId = companyId;
+        this.message = message;
+    }
 
     public String getCompanyId() { return companyId; }
-    public void setCompanyId(String companyId) { this.companyId = companyId; }
-
-    public String getAdminUserId() { return adminUserId; }
-    public void setAdminUserId(String adminUserId) { this.adminUserId = adminUserId; }
-
-    public String getAccessToken() { return accessToken; }
-    public void setAccessToken(String accessToken) { this.accessToken = accessToken; }
+    public String getMessage() { return message; }
 }
-

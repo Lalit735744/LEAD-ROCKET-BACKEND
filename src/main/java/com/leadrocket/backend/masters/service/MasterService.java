@@ -1,9 +1,11 @@
+// Service layer for master data
+// Keeps controller clean and allows future caching
+
 package com.leadrocket.backend.masters.service;
 
 import com.leadrocket.backend.masters.model.MasterData;
 import com.leadrocket.backend.masters.repository.MasterRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
@@ -16,8 +18,11 @@ public class MasterService {
 		this.repository = repository;
 	}
 
-	@Cacheable(value = "masters", key = "#type")
+	/**
+	 * Get active master values by type.
+	 * Example: LEAD_STATUS, ACTIVITY_TYPE
+	 */
 	public List<MasterData> getByType(String type) {
-		return repository.findByType(type);
+		return repository.findByTypeAndActiveTrue(type);
 	}
 }

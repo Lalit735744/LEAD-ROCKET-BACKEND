@@ -1,16 +1,13 @@
-spring:
-  application:
-    name: lead-rocket-backend
+# Development environment configuration
 
+spring:
   data:
     mongodb:
-      uri: mongodb+srv://laptoplalit4_db_user:Lalit%407357@cluster0.aaa9fsk.mongodb.net/leadrocket_dev?appName=Cluster0
+      uri: ${MONGODB_URI}
 
 server:
   port: 8080
 
 security:
   jwt:
-    secret: CHANGE_THIS_DEV_SECRET_CHANGE_ME
-    accessTokenTtlMs: 86400000
-    refreshTokenTtlMs: 2592000000
+    secret: ${JWT_SECRET}
